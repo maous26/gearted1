@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Gearted - Marketplace pour l'échange d'équipements Airsoft">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Gearted">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Gearted</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Google Sign-In -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #1F2937;
+      color: white;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    
+    .loading-text {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #4A5D23;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 2s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Chargement de Gearted...</div>
+  </div>
+  
+  <script>
+    // Modern Flutter Web loader for 2025
+    window.addEventListener('load', function(ev) {
+      var loading = document.getElementById('loading');
+      
+      // Safety timeout - hide loading after 10 seconds max
+      setTimeout(function() {
+        if (loading && loading.style.display !== 'none') {
+          loading.innerHTML = '<div style="text-align: center;"><div class="spinner"></div><div class="loading-text">Erreur de chargement<br><button onclick="location.reload()" style="margin-top: 15px; padding: 10px 20px; background: #4A5D23; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">Rafraîchir</button></div></div>';
+        }
+      }, 10000);
+      
+      // Try modern Flutter loading method
+      if (window._flutter && window._flutter.loader) {
+        window._flutter.loader.load().then(function(engine) {
+          loading.style.display = 'none';
+          return engine.runApp();
+        }).catch(function(error) {
+          console.error('Flutter loading error:', error);
+          loading.innerHTML = '<div style="text-align: center;"><div style="color: #ff6b6b; margin-bottom: 20px;">Erreur de chargement Flutter</div><button onclick="location.reload()" style="padding: 10px 20px; background: #4A5D23; color: white; border: none; border-radius: 5px; cursor: pointer;">Rafraîchir</button></div>';
+        });
+      } else {
+        // Fallback - load main.dart.js directly
+        var script = document.createElement('script');
+        script.src = 'main.dart.js';
+        script.onload = function() {
+          setTimeout(function() {
+            loading.style.display = 'none';
+          }, 2000);
+        };
+        script.onerror = function() {
+          loading.innerHTML = '<div style="text-align: center;"><div style="color: #ff6b6b; margin-bottom: 20px;">Erreur de chargement du script</div><button onclick="location.reload()" style="padding: 10px 20px; background: #4A5D23; color: white; border: none; border-radius: 5px; cursor: pointer;">Rafraîchir</button></div>';
+        };
+        document.head.appendChild(script);
+      }
+    });
+  </script>
+</body>
+</html>

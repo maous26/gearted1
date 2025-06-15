@@ -1,0 +1,52 @@
+import { createClient, RedisClientType } from 'redis';
+import { logger } from '../utils/logger';
+
+// Redis client
+let redisClient: RedisClientType | null = null;
+
+// Redis functions (now natively async in Redis v4+)
+export const getAsync = async (key: string): Promise<string | null> => {
+  return redisClient ? await redisClient.get(key) : null;
+};
+
+export const setexAsync = async (key: string, seconds: number, value: string): Promise<string | null> => {
+  return redisClient ? await redisClient.setEx(key, seconds, value) : null;
+};
+
+export const delAsync = async (key: string): Promise<number> => {
+  return redisClient ? await redisClient.del(key) : 0;
+};
+
+// Initialize Redis connection
+export const connectRedis = async (): Promise<void> => {
+  try {
+    if (process.env.REDIS_HOST) {
+      redisClient = createClient({
+        url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT || '6379'}`,
+        password: process.env.REDIS_PASSWORD,
+      });
+
+      // Set up event listeners
+      redisClient.on('connect', () => {
+        logger.info('✅ Redis connected successfully');
+      });
+
+      // Listen for errors
+      redisClient.on('error', (err: Error) => {
+        logger.error(`❌ Redis error: ${err.message}`);
+      });
+
+      // Connect to Redis
+      await redisClient.connect();
+    } else {
+      logger.warn('⚠️ Redis host not configured, skipping Redis initialization');
+    }
+  } catch (error) {
+    logger.error(`❌ Redis connection error: ${error instanceof Error ? error.message : String(error)}`);
+  }
+};
+
+// Get Redis client
+export const getRedisClient = () => {
+  return redisClient;
+};
