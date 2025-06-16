@@ -25,16 +25,26 @@ const startServer = async () => {
     
     // Connect to PostgreSQL if configured
     if (process.env.POSTGRES_HOST) {
-      await connectPostgres();
-      // Run the compatibility schema migration
-      await migrateCompatibilitySchema();
+      try {
+        await connectPostgres();
+        // Run the compatibility schema migration
+        await migrateCompatibilitySchema();
+      } catch (pgError) {
+        logger.error(`❌ PostgreSQL connection failed: ${pgError instanceof Error ? pgError.message : String(pgError)}`);
+        logger.warn('⚠️ Continuing without PostgreSQL - compatibility features will be limited');
+      }
     } else {
       logger.warn('⚠️ PostgreSQL not configured, compatibility features will be limited');
     }
     
     // Connect to Redis if configured
     if (process.env.REDIS_HOST) {
-      await connectRedis();
+      try {
+        await connectRedis();
+      } catch (redisError) {
+        logger.error(`❌ Redis connection failed: ${redisError instanceof Error ? redisError.message : String(redisError)}`);
+        logger.warn('⚠️ Continuing without Redis - using fallback caching');
+      }
     } else {
       logger.warn('⚠️ Redis not configured, using fallback caching');
     }

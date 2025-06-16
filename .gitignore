@@ -77,3 +77,6 @@ android/app/outputs/
 *.bak
 *.backup
 *~
+
+# Local Netlify folder
+.netlify
