@@ -10,7 +10,7 @@ import { connectRedis } from './config/redis';
 import { migrateCompatibilitySchema } from './migrations/compatibility-schema';
 import { logger } from './utils/logger';
 
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || '3000', 10);
 
 // Vérifier les variables critiques
 if (!process.env.DB_URI) {
@@ -49,7 +49,7 @@ const startServer = async () => {
       logger.warn('⚠️ Redis not configured, using fallback caching');
     }
     
-    const server = app.listen(PORT, () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
       logger.info(`🚀 Serveur démarré sur le port ${PORT}`);
       logger.info(`📁 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
