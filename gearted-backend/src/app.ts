@@ -69,7 +69,10 @@ app.use(session({
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     maxAge: 24 * 60 * 60 * 1000, // 24 heures
-  }
+    httpOnly: true, // Sécurité supplémentaire
+    sameSite: 'strict' // Protection CSRF
+  },
+  name: 'gearted.sid' // Nom de session personnalisé
 }));
 
 // Initialiser Passport
