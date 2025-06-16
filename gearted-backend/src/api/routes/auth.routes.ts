@@ -22,25 +22,29 @@ router.post('/register', register);
 router.post('/login', login);
 router.get('/me', authMiddleware, getMe);
 
-// Routes OAuth Google
-router.get('/google', 
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
+// Routes OAuth Google - seulement si configuré
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  router.get('/google', 
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+  );
 
-router.get('/google/callback',
-  passport.authenticate('google', { failureRedirect: '/api/auth/failure' }),
-  oauthSuccess
-);
+  router.get('/google/callback',
+    passport.authenticate('google', { failureRedirect: '/api/auth/failure' }),
+    oauthSuccess
+  );
+}
 
-// Routes OAuth Facebook
-router.get('/facebook',
-  passport.authenticate('facebook', { scope: ['email'] })
-);
+// Routes OAuth Facebook - seulement si configuré
+if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
+  router.get('/facebook',
+    passport.authenticate('facebook', { scope: ['email'] })
+  );
 
-router.get('/facebook/callback',
-  passport.authenticate('facebook', { failureRedirect: '/api/auth/failure' }),
-  oauthSuccess
-);
+  router.get('/facebook/callback',
+    passport.authenticate('facebook', { failureRedirect: '/api/auth/failure' }),
+    oauthSuccess
+  );
+}
 
 // Route d'échec OAuth
 router.get('/failure', oauthFailure);
