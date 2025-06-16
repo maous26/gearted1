@@ -1,0 +1,194 @@
+name: 🚀 Gearted CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, staging, develop ]
+  pull_request:
+    branches: [ main, staging, develop ]
+
+env:
+  NODE_VERSION: '18'
+  FLUTTER_VERSION: '3.16.0'
+
+jobs:
+  # Tests Backend
+  backend-tests:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'gearted-backend/') || github.event_name == 'pull_request'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: gearted-backend/package-lock.json
+        
+    - name: 🔧 Install dependencies
+      working-directory: ./gearted-backend
+      run: npm ci
+      
+    - name: 🏗️ Build backend
+      working-directory: ./gearted-backend
+      run: npm run build
+      
+    - name: 🧪 Run tests
+      working-directory: ./gearted-backend
+      run: npm test
+      
+    - name: 📊 Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./gearted-backend/coverage/lcov.info
+        flags: backend
+
+  # Tests Mobile
+  mobile-tests:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'gearted-mobile/') || github.event_name == 'pull_request'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📱 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        
+    - name: 🔧 Get dependencies
+      working-directory: ./gearted-mobile
+      run: flutter pub get
+      
+    - name: 🧪 Run tests
+      working-directory: ./gearted-mobile
+      run: flutter test
+      
+    - name: 🏗️ Build APK (debug)
+      working-directory: ./gearted-mobile
+      run: flutter build apk --debug
+
+  # Tests Admin
+  admin-tests:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'gearted-admin/') || github.event_name == 'pull_request'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: gearted-admin/package-lock.json
+        
+    - name: 🔧 Install dependencies
+      working-directory: ./gearted-admin
+      run: npm ci
+      
+    - name: 🏗️ Build admin
+      working-directory: ./gearted-admin
+      run: npm run build
+      
+    - name: 🧪 Run tests
+      working-directory: ./gearted-admin
+      run: npm test
+
+  # Déploiement Staging
+  deploy-staging:
+    needs: [backend-tests, mobile-tests, admin-tests]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🚀 Deploy notification
+      run: |
+        echo "🚀 Déploiement staging déclenché"
+        echo "Branch: ${{ github.ref }}"
+        echo "Commit: ${{ github.sha }}"
+        
+    - name: 📧 Notify deployment
+      uses: 8398a7/action-slack@v3
+      if: always()
+      with:
+        status: ${{ job.status }}
+        text: "Staging deployment: ${{ job.status }}"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  # Déploiement Production
+  deploy-production:
+    needs: [backend-tests, mobile-tests, admin-tests]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🎯 Production deployment
+      run: |
+        echo "🎯 Déploiement production déclenché"
+        echo "Branch: ${{ github.ref }}"
+        echo "Commit: ${{ github.sha }}"
+        
+    - name: 🏷️ Create release tag
+      run: |
+        TAG_NAME="v$(date +'%Y.%m.%d.%H%M')"
+        git tag -a $TAG_NAME -m "Production release: $(date +'%Y-%m-%d %H:%M')"
+        git push origin $TAG_NAME
+        
+    - name: 📧 Notify production deployment
+      uses: 8398a7/action-slack@v3
+      if: always()
+      with:
+        status: ${{ job.status }}
+        text: "🎉 Production deployment: ${{ job.status }}"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  # Linting et Qualité du Code
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: 🔍 Backend linting
+      working-directory: ./gearted-backend
+      run: |
+        npm ci
+        npm run lint
+        
+    - name: 🔍 Admin linting
+      working-directory: ./gearted-admin
+      run: |
+        npm ci
+        npm run lint
+
+  # Sécurité
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔒 Run security audit
+      run: |
+        cd gearted-backend && npm audit --audit-level moderate
+        cd ../gearted-admin && npm audit --audit-level moderate
