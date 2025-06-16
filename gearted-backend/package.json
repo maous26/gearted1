@@ -7,12 +7,19 @@
     "start": "node dist/server.js",
     "build": "tsc",
     "start:prod": "npm run build && node dist/server.js",
-    "dev": "nodemon --exec ts-node src/server.ts",
+    "dev": "NODE_ENV=development nodemon --exec ts-node src/server.ts",
+    "dev:staging": "NODE_ENV=staging npm run build && npm start",
     "dev:safe": "./start-server.sh",
     "check": "./check-dev-env.sh",
     "kill-port": "./kill-port.sh",
     "lint": "eslint . --ext .ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --detectOpenHandles",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "db:seed": "ts-node scripts/seed-database.ts",
+    "db:reset": "ts-node scripts/reset-database.ts",
+    "deploy:staging": "echo 'Deploying to staging...' && git push origin staging",
+    "deploy:production": "echo 'Deploying to production...' && git push origin main"
   },
   "keywords": [
     "airsoft",
