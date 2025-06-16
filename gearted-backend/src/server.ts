@@ -10,13 +10,27 @@ import { connectRedis } from './config/redis';
 import { migrateCompatibilitySchema } from './migrations/compatibility-schema';
 import { logger } from './utils/logger';
 
-const PORT = parseInt(process.env.PORT || '3000', 10);
+const PORT = parseInt(process.env.PORT || '10000', 10);
+
+// Ensure we're using the correct host for Render
+const HOST = process.env.HOST || '0.0.0.0';
 
 // Vérifier les variables critiques
-if (!process.env.DB_URI) {
-  logger.error('❌ DB_URI manquant dans le fichier .env');
+const requiredEnvVars = ['DB_URI', 'JWT_SECRET'];
+const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingEnvVars.length > 0) {
+  logger.error(`❌ Missing required environment variables: ${missingEnvVars.join(', ')}`);
+  logger.error(`💡 Please set these variables in your deployment environment`);
   process.exit(1);
 }
+
+logger.info(`🔧 Server configuration:`);
+logger.info(`   - PORT: ${PORT}`);
+logger.info(`   - HOST: ${HOST}`);
+logger.info(`   - NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+logger.info(`   - DB configured: ${process.env.DB_URI ? '✅' : '❌'}`);
+logger.info(`   - JWT configured: ${process.env.JWT_SECRET ? '✅' : '❌'}`);
 
 // Démarrer le serveur
 const startServer = async () => {
@@ -60,15 +74,16 @@ const startServer = async () => {
       logger.info('⚠️ Redis not configured, using fallback caching');
     }
     
-    const server = app.listen(PORT, '0.0.0.0', () => {
+    const server = app.listen(PORT, HOST, () => {
       logger.info(`🚀 Gearted Backend Server started successfully`);
-      logger.info(`📍 Server running on: http://0.0.0.0:${PORT}`);
+      logger.info(`📍 Server running on: http://${HOST}:${PORT}`);
       logger.info(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-      logger.info(`🔗 Health check: http://0.0.0.0:${PORT}/api/health`);
+      logger.info(`🔗 Health check: http://${HOST}:${PORT}/api/health`);
       
       // Log that server is ready to accept connections
       if (isProduction) {
         logger.info(`✅ Production server ready - all systems operational`);
+        logger.info(`🌐 Public URL: https://gearted-backend.onrender.com`);
       }
     });
 

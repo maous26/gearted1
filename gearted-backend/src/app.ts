@@ -24,8 +24,16 @@ const app: Application = express();
 
 // Middlewares
 app.use(helmet());
-app.use(cors({
-  origin: [
+
+// Dynamic CORS configuration
+const getAllowedOrigins = () => {
+  const defaultOrigins = [
+    // Production domains
+    'https://www.gearted.eu',
+    'https://gearted.eu',
+    'https://admin.gearted.eu',
+    'https://api.gearted.eu',
+    // Development domains
     process.env.CLIENT_URL || 'http://localhost:3000',
     'http://localhost:8080', // Flutter dev port
     'http://localhost:8081', // Flutter alt port
@@ -34,7 +42,19 @@ app.use(cors({
     'http://localhost:3002', // Admin console (port 3002)
     'http://localhost:3003', // Admin console (port 3003)
     'http://localhost:3005'  // Admin console (port 3005)
-  ],
+  ];
+
+  // Add origins from environment variable if available
+  if (process.env.CORS_ORIGIN) {
+    const envOrigins = process.env.CORS_ORIGIN.split(',').map(origin => origin.trim());
+    return [...defaultOrigins, ...envOrigins];
+  }
+
+  return defaultOrigins;
+};
+
+app.use(cors({
+  origin: getAllowedOrigins(),
   credentials: true,
 }));
 app.use(express.json());
