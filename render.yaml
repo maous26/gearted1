@@ -1,0 +1,36 @@
+services:
+  # Frontend Service - Main Website
+  - type: web
+    name: gearted-frontend
+    env: node
+    rootDir: gearted-admin
+    buildCommand: cd gearted-admin && npm ci && npm run build
+    startCommand: cd gearted-admin && npm start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://gearted-backend.onrender.com/api
+    domains:
+      - gearted.eu
+
+  # Backend Service - API (Already deployed)
+  - type: web
+    name: gearted-backend
+    env: node
+    rootDir: gearted-backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_TLS_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://gearted.eu
