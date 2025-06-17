@@ -3,16 +3,15 @@ services:
   - type: web
     name: gearted-frontend
     env: node
-    buildCommand: cd gearted-admin && npm ci && npm run build
-    startCommand: cd gearted-admin && npm start
+    rootDir: gearted-admin
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
     plan: free
     envVars:
       - key: NODE_ENV
         value: production
       - key: NEXT_PUBLIC_API_URL
         value: https://gearted-backend.onrender.com/api
-    domains:
-      - gearted.eu
 
   # Backend Service - API (Already deployed)
   - type: web
