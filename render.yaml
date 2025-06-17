@@ -3,7 +3,6 @@ services:
   - type: web
     name: gearted-frontend
     env: node
-    rootDir: gearted-admin
     buildCommand: cd gearted-admin && npm ci && npm run build
     startCommand: cd gearted-admin && npm start
     plan: free
