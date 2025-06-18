@@ -33,6 +33,10 @@ const getAllowedOrigins = () => {
     'https://gearted.eu',
     'https://admin.gearted.eu',
     'https://api.gearted.eu',
+    // Render frontend URLs
+    'https://gearted1.onrender.com',
+    'https://gearted-frontend.onrender.com',
+    'https://gearted-admin.onrender.com',
     // Development domains
     process.env.CLIENT_URL || 'http://localhost:3000',
     'http://localhost:8080', // Flutter dev port
