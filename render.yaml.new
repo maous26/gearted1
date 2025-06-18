@@ -1,0 +1,33 @@
+# filepath: /Users/moussa/Gearted1/render.yaml
+services:
+  # User Frontend Service - Main Website
+  - type: web
+    name: gearted-frontend-user
+    env: node
+    rootDir: gearted-frontend
+    buildCommand: NODE_OPTIONS="--max-old-space-size=512" npm ci && npm run build
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # Backend Service - API (Already deployed)
+  - type: web
+    name: gearted-backend
+    env: node
+    rootDir: gearted-backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_TLS_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://gearted.eu

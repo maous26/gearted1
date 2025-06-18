@@ -206,64 +206,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  Future<void> _registerWithFacebook() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final result = await _authService.signInWithFacebook();
-
-      if (result != null && context.mounted) {
-        context.go('/home');
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur d\'inscription Facebook: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _registerWithInstagram() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final result = await _authService.signInWithInstagram(context);
-
-      if (result != null && context.mounted) {
-        context.go('/home');
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur d\'inscription Instagram: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -496,23 +438,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 24),
 
-                // Boutons d'inscription sociale
+                // Boutons d'inscription sociale - GOOGLE SEULEMENT
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildSocialButton(
                       onPressed: _registerWithGoogle,
                       icon: Icons.g_mobiledata,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildSocialButton(
-                      onPressed: _registerWithFacebook,
-                      icon: Icons.facebook,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildSocialButton(
-                      onPressed: _registerWithInstagram,
-                      icon: Icons.camera_alt,
                     ),
                   ],
                 ),

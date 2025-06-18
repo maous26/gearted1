@@ -141,64 +141,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _loginWithFacebook() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final result = await _authService.signInWithFacebook();
-
-      if (result != null && context.mounted) {
-        context.go('/home');
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur de connexion Facebook: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _loginWithInstagram() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final result = await _authService.signInWithInstagram(context);
-
-      if (result != null && context.mounted) {
-        context.go('/home');
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur de connexion Instagram: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -350,23 +292,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 24),
 
-                // Boutons de connexion sociale
+                // Boutons de connexion sociale - GOOGLE SEULEMENT
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildSocialButton(
                       onPressed: _loginWithGoogle,
                       icon: Icons.g_mobiledata,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildSocialButton(
-                      onPressed: _loginWithFacebook,
-                      icon: Icons.facebook,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildSocialButton(
-                      onPressed: _loginWithInstagram,
-                      icon: Icons.camera_alt,
                     ),
                   ],
                 ),

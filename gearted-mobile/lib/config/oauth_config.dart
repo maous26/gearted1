@@ -5,14 +5,12 @@ class OAuthConfig {
   static String get googleWebClientId =>
       dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '';
 
-  // Facebook OAuth Configuration
-  static String get facebookAppId => dotenv.env['FACEBOOK_APP_ID'] ?? '';
+  // Facebook OAuth Configuration - DÉSACTIVÉ
+  static String get facebookAppId => '';
 
-  // Instagram OAuth Configuration
-  static String get instagramClientId =>
-      dotenv.env['INSTAGRAM_CLIENT_ID'] ?? '';
-  static String get instagramClientSecret =>
-      dotenv.env['INSTAGRAM_CLIENT_SECRET'] ?? '';
+  // Instagram OAuth Configuration - DÉSACTIVÉ
+  static String get instagramClientId => '';
+  static String get instagramClientSecret => '';
 
   // API Configuration
   static String get apiUrl =>
@@ -20,19 +18,17 @@ class OAuthConfig {
 
   // Validation methods
   static bool get isGoogleConfigured => googleWebClientId.isNotEmpty;
-  static bool get isFacebookConfigured => facebookAppId.isNotEmpty;
-  static bool get isInstagramConfigured =>
-      instagramClientId.isNotEmpty && instagramClientSecret.isNotEmpty;
+  static bool get isFacebookConfigured => false; // Désactivé
+  static bool get isInstagramConfigured => false; // Désactivé
 
-  static bool get isOAuthConfigured =>
-      isGoogleConfigured && isFacebookConfigured && isInstagramConfigured;
+  static bool get isOAuthConfigured => isGoogleConfigured; // Seulement Google
 
   // Debug method
   static void printConfig() {
     print('=== OAuth Configuration ===');
     print('Google configured: $isGoogleConfigured');
-    print('Facebook configured: $isFacebookConfigured');
-    print('Instagram configured: $isInstagramConfigured');
+    print('Facebook configured: $isFacebookConfigured (DÉSACTIVÉ)');
+    print('Instagram configured: $isInstagramConfigured (DÉSACTIVÉ)');
     print('API URL: $apiUrl');
     print('==========================');
   }
