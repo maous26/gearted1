@@ -2,12 +2,15 @@ services:
   - type: web
     name: gearted-mobile-app
     env: static
+    rootDir: gearted-mobile
     buildCommand: |
       echo "🚀 Building Gearted Flutter Mobile App for Web"
-      cd gearted-mobile
       
       # Setup production environment
-      cp .env.production .env
+      if [ -f ".env.production" ]; then
+        cp .env.production .env
+        echo "✅ Environment configured"
+      fi
       
       # Install Flutter dependencies
       flutter pub get
@@ -17,7 +20,7 @@ services:
       
       echo "✅ Flutter build completed"
       
-    staticPublishPath: gearted-mobile/build/web
+    staticPublishPath: build/web
     buildFilter:
       paths:
       - gearted-mobile/**

@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: gearted-mobile-app
+    env: node
+    buildCommand: |
+      echo "🚀 Building Gearted Flutter Mobile App for Web Service"
+      
+      # Install Flutter
+      export PATH="$PATH:/opt/flutter/bin"
+      cd gearted-mobile
+      
+      # Setup production environment
+      cp .env.production .env
+      
+      # Install Flutter dependencies
+      flutter pub get
+      
+      # Build for web
+      flutter build web --release
+      
+      # Install serve to run the app
+      npm install -g serve
+      
+      echo "✅ Flutter build completed"
+      
+    startCommand: serve -s gearted-mobile/build/web -l $PORT
+    plan: free
+    buildFilter:
+      paths:
+      - gearted-mobile/**
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FLUTTER_WEB
+        value: "true"
+      - key: API_URL
+        value: https://gearted-backend.onrender.com/api
+      - key: API_BASE_URL
+        value: https://gearted-backend.onrender.com/api
+      - key: GOOGLE_WEB_CLIENT_ID
+        value: 687718240492-64g24qkkeneqbsn4803gft7bgrbqlihn.apps.googleusercontent.com

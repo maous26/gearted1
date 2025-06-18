@@ -1,48 +1,52 @@
 services:
-  # User Frontend Service - Main Website
   - type: web
-    name: gearted-frontend-user
-    env: node
-    rootDir: gearted-frontend
-    buildCommand: NODE_OPTIONS=--max-old-space-size=512 npm run build
-    startCommand: npm start
-    plan: free
+    name: gearted-mobile-app
+    env: static
+    rootDir: gearted-mobile
+    buildCommand: |
+      echo "🚀 Building Gearted Flutter Mobile App for Web"
+      
+      # Setup production environment
+      if [ -f ".env.production" ]; then
+        cp .env.production .env
+        echo "✅ Environment configured"
+      fi
+      
+      # Install Flutter dependencies
+      flutter pub get
+      
+      # Build for web
+      flutter build web --release
+      
+      echo "✅ Flutter build completed"
+      
+    staticPublishPath: build/web
+    buildFilter:
+      paths:
+      - gearted-mobile/**
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /canvaskit/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
-      - key: NODE_ENV
-        value: production
-
-  # Admin Frontend Service - Management Console
-  - type: web
-    name: gearted-frontend
-    env: node
-    # rootDir makes Render work directly in gearted-admin/
-    # No need for "cd gearted-admin &&" in commands
-    rootDir: gearted-admin
-    buildCommand: npm run render:build
-    startCommand: npm run render:start
-    plan: free
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: NEXT_PUBLIC_API_URL
+      - key: FLUTTER_WEB
+        value: "true"
+      - key: API_URL
         value: https://gearted-backend.onrender.com/api
-
-  # Backend Service - API (Already deployed)
-  - type: web
-    name: gearted-backend
-    env: node
-    rootDir: gearted-backend
-    buildCommand: npm ci && npm run build
-    startCommand: npm start
-    plan: free
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: MONGODB_URI
-        sync: false
-      - key: REDIS_TLS_URL
-        sync: false
-      - key: SESSION_SECRET
-        generateValue: true
-      - key: CORS_ORIGIN
-        value: https://gearted.eu
+      - key: API_BASE_URL
+        value: https://gearted-backend.onrender.com/api
+      - key: GOOGLE_WEB_CLIENT_ID
+        value: 687718240492-64g24qkkeneqbsn4803gft7bgrbqlihn.apps.googleusercontent.com
