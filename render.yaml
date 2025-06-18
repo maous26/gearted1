@@ -6,8 +6,8 @@ services:
     # rootDir makes Render work directly in gearted-admin/
     # No need for "cd gearted-admin &&" in commands
     rootDir: gearted-admin
-    buildCommand: npm ci && npm run build
-    startCommand: npm start
+    buildCommand: npm run render:build
+    startCommand: npm run render:start
     plan: free
     envVars:
       - key: NODE_ENV

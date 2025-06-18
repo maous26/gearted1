@@ -11,7 +11,9 @@
     "start:production": "NODE_ENV=production next start",
     "clean": "rm -rf .next node_modules/.cache",
     "install:clean": "npm ci && npm run clean",
-    "deploy:build": "npm run install:clean && npm run build:production"
+    "deploy:build": "npm run install:clean && npm run build:production",
+    "render:build": "npm ci --production=false && npm run build",
+    "render:start": "npm start"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
