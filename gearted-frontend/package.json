@@ -5,8 +5,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NODE_OPTIONS='--max-old-space-size=1024' next build",
+    "render:build": "NODE_OPTIONS='--max-old-space-size=1024' next build",
     "start": "next start",
+    "render:start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
