@@ -1,17 +1,16 @@
 services:
-  # User Frontend Service - Main Website
-  - type: web
+  # User Frontend Service - Main Website (Static Export)
+  - type: static
     name: gearted-frontend-user
-    env: node
+    env: static
     rootDir: gearted-frontend
     buildCommand: npm ci && npm run render:build
-    startCommand: npm run render:start
-    plan: free
+    publishDir: out
     envVars:
       - key: NODE_ENV
         value: production
       - key: NODE_OPTIONS
-        value: "--max-old-space-size=1024"
+        value: "--max-old-space-size=512"
 
   # Admin Frontend Service - Management Console
   - type: web
