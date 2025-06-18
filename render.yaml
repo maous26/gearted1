@@ -1,7 +1,7 @@
 services:
   # User Frontend Service - Main Website
   - type: web
-    name: gearted-user-frontend
+    name: gearted-frontend-user
     env: node
     rootDir: gearted-frontend
     buildCommand: npm ci && npm run build
