@@ -1,5 +1,17 @@
 services:
-  # Frontend Service - Main Website
+  # User Frontend Service - Main Website
+  - type: web
+    name: gearted-user-frontend
+    env: node
+    rootDir: gearted-frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # Admin Frontend Service - Management Console
   - type: web
     name: gearted-frontend
     env: node
