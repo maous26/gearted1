@@ -1,12 +1,12 @@
-# FIXED: Render Configuration for Flutter Web - Direct Build Path
+# BULLETPROOF Render Configuration - Forces correct directory structure
 services:
   - type: static_site
     name: gearted-mobile-app
     env: static
     buildCommand: |
-      echo "🚀 Starting Gearted Flutter Web Build"
+      echo "🚀 BULLETPROOF Flutter Build Process Starting..."
       echo "📍 Working directory: $(pwd)"
-      echo "📁 Contents: $(ls -la)"
+      echo "📁 Available files: $(ls -la)"
       
       # Install Flutter
       echo "📦 Installing Flutter..."
@@ -14,39 +14,56 @@ services:
       tar xf flutter.tar.xz
       export PATH="$PWD/flutter/bin:$PATH"
       
-      # Verify Flutter installation
+      # Verify Flutter
       flutter --version
       echo "✅ Flutter installed successfully"
       
       # Navigate to Flutter project
       cd gearted-mobile
-      echo "📂 Building in: $(pwd)"
+      echo "📂 Building Flutter app in: $(pwd)"
       
-      # Setup environment
+      # Setup environment if available
       if [ -f ".env.production" ]; then
         cp .env.production .env
-        echo "🔧 Environment configured"
+        echo "🔧 Production environment configured"
       fi
       
-      # Install dependencies and build
-      echo "📦 Installing dependencies..."
+      # Install dependencies
+      echo "📦 Installing Flutter dependencies..."
       flutter pub get
       
-      echo "🏗️ Building Flutter web app..."
+      # Build for web
+      echo "🏗️ Building Flutter web application..."
       flutter build web --release --web-renderer html
       
-      echo "✅ Build completed!"
-      echo "📁 Build output structure:"
+      # Verify build output exists
+      echo "🔍 Verifying build output..."
       ls -la build/web/
       
-    # CRITICAL: Use direct path to Flutter build output  
-    publishPath: gearted-mobile/build/web
+      # Create the exact directory structure Render expects
+      echo "📋 Creating deployment structure..."
+      cd ..
+      mkdir -p flutter-build
+      
+      # Copy all web files to the flutter-build directory
+      cp -r gearted-mobile/build/web/* flutter-build/
+      
+      # Verify the final structure  
+      echo "✅ Build process completed!"
+      echo "📁 Final deployment directory:"
+      ls -la flutter-build/
+      echo "📄 Key files present:"
+      ls -la flutter-build/index.html flutter-build/main.dart.js 2>/dev/null || echo "Checking for critical files..."
+      
+    # This is the directory Render will serve from
+    publishPath: flutter-build
     
+    # Only rebuild when Flutter app changes
     buildFilter:
       paths:
       - gearted-mobile/**
       
-    # Environment variables
+    # Essential environment variables
     envVars:
       - key: FLUTTER_WEB
         value: "true"
@@ -59,13 +76,13 @@ services:
       - key: NODE_ENV
         value: production
         
-    # SPA routing support for Flutter web
+    # SPA routing support for Flutter navigation
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
         
-    # Performance headers
+    # Performance and security headers
     headers:
       - path: /*
         name: X-Frame-Options
@@ -74,5 +91,8 @@ services:
         name: X-Content-Type-Options
         value: nosniff
       - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: "*.js"
         name: Cache-Control
         value: public, max-age=31536000, immutable
