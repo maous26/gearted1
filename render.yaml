@@ -5,11 +5,12 @@ services:
     plan: free
     autoDeploy: true
     branch: main
+    # Set the root directory to the Flutter project
+    rootDir: gearted-mobile
     buildFilter:
       paths:
       - "gearted-mobile/**"
       - "render.yaml"
-      - "flutter-build/**"
     headers:
       - path: "/*"
         name: "Cache-Control"
@@ -20,6 +21,7 @@ services:
         destination: "/index.html"
     buildCommand: |
       # STEP 1: Install Flutter
+      # The working directory is now /opt/render/project/src/gearted-mobile
       echo "Installing Flutter..."
       apt-get update && apt-get install -y --no-install-recommends git unzip xz-utils zip libglu1-mesa
       git clone https://github.com/flutter/flutter.git --depth 1 --branch 3.22.2 /opt/flutter
@@ -27,15 +29,16 @@ services:
       flutter doctor -v
 
       # STEP 2: Build the Flutter app
+      # We are already in the gearted-mobile directory, so no 'cd' is needed.
       echo "Building Flutter app..."
-      cd gearted-mobile
       flutter pub get
       flutter build web --release --web-renderer canvaskit
 
-      # STEP 3: Move the built assets to the directory Render expects
+      # STEP 3: Move the built assets to the publish directory
+      # The publishPath is relative to the repo root, so we move the files
+      # to the parent directory's 'flutter-build' folder.
       echo "Moving build artifacts to publish directory..."
-      mv build/web/* ../flutter-build/
+      mv build/web ../flutter-build
 
-    # This is the directory Render will serve the static files from.
-    # It now exists in the repo, so the build won't fail on startup.
+    # This path is relative to the repository root, NOT the rootDir.
     publishPath: flutter-build
