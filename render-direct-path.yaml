@@ -1,0 +1,82 @@
+# Alternative Render configuration - Direct path approach
+services:
+  - type: static_site
+    name: gearted-mobile-app
+    env: static
+    buildCommand: |
+      echo "🚀 Starting Gearted Flutter Web Build"
+      echo "📍 Build environment: $(pwd)"
+      
+      # Install Flutter
+      echo "📦 Installing Flutter..."
+      curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.5-stable.tar.xz -o flutter.tar.xz
+      tar xf flutter.tar.xz
+      export PATH="$PWD/flutter/bin:$PATH"
+      
+      # Verify Flutter installation
+      flutter --version
+      echo "✅ Flutter installed successfully"
+      
+      # Navigate to Flutter project
+      cd gearted-mobile
+      echo "📂 Building from: $(pwd)"
+      
+      # Setup environment
+      if [ -f ".env.production" ]; then
+        cp .env.production .env
+        echo "🔧 Production environment configured"
+      fi
+      
+      # Install dependencies
+      echo "📦 Installing Flutter dependencies..."
+      flutter pub get
+      
+      # Build for web
+      echo "🏗️  Building Flutter web app..."
+      flutter build web --release --web-renderer html
+      
+      # Copy build output directly to expected location
+      echo "📋 Deploying build output..."
+      mkdir -p /opt/render/project/src/flutter-build
+      cp -r build/web/* /opt/render/project/src/flutter-build/
+      
+      echo "✅ Build deployed successfully!"
+      echo "📁 Deployed files:"
+      ls -la /opt/render/project/src/flutter-build/
+      
+    publishPath: flutter-build
+    
+    buildFilter:
+      paths:
+      - gearted-mobile/**
+      
+    # Environment variables
+    envVars:
+      - key: FLUTTER_WEB
+        value: "true"
+      - key: API_URL
+        value: https://gearted-backend.onrender.com/api
+      - key: API_BASE_URL
+        value: https://gearted-backend.onrender.com/api
+      - key: GOOGLE_WEB_CLIENT_ID
+        value: 687718240492-64g24qkkeneqbsn4803gft7bgrbqlihn.apps.googleusercontent.com
+      - key: NODE_ENV
+        value: production
+        
+    # Security and performance headers
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+        
+    # SPA routing support
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

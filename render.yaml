@@ -1,0 +1,78 @@
+# FIXED: Render Configuration for Flutter Web - Direct Build Path
+services:
+  - type: static_site
+    name: gearted-mobile-app
+    env: static
+    buildCommand: |
+      echo "🚀 Starting Gearted Flutter Web Build"
+      echo "📍 Working directory: $(pwd)"
+      echo "📁 Contents: $(ls -la)"
+      
+      # Install Flutter
+      echo "📦 Installing Flutter..."
+      curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.5-stable.tar.xz -o flutter.tar.xz
+      tar xf flutter.tar.xz
+      export PATH="$PWD/flutter/bin:$PATH"
+      
+      # Verify Flutter installation
+      flutter --version
+      echo "✅ Flutter installed successfully"
+      
+      # Navigate to Flutter project
+      cd gearted-mobile
+      echo "📂 Building in: $(pwd)"
+      
+      # Setup environment
+      if [ -f ".env.production" ]; then
+        cp .env.production .env
+        echo "🔧 Environment configured"
+      fi
+      
+      # Install dependencies and build
+      echo "📦 Installing dependencies..."
+      flutter pub get
+      
+      echo "🏗️ Building Flutter web app..."
+      flutter build web --release --web-renderer html
+      
+      echo "✅ Build completed!"
+      echo "📁 Build output structure:"
+      ls -la build/web/
+      
+    # CRITICAL: Use direct path to Flutter build output  
+    publishPath: gearted-mobile/build/web
+    
+    buildFilter:
+      paths:
+      - gearted-mobile/**
+      
+    # Environment variables
+    envVars:
+      - key: FLUTTER_WEB
+        value: "true"
+      - key: API_URL
+        value: https://gearted-backend.onrender.com/api
+      - key: API_BASE_URL
+        value: https://gearted-backend.onrender.com/api
+      - key: GOOGLE_WEB_CLIENT_ID
+        value: 687718240492-64g24qkkeneqbsn4803gft7bgrbqlihn.apps.googleusercontent.com
+      - key: NODE_ENV
+        value: production
+        
+    # SPA routing support for Flutter web
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+        
+    # Performance headers
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
