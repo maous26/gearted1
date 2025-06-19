@@ -1,63 +1,55 @@
+# Optimal Render configuration for Flutter web deployment
 services:
   - type: static_site
     name: gearted-mobile-app
     env: static
     buildCommand: |
-      echo "🚀 Installing Flutter and building Gearted Mobile App"
+      echo "🚀 Starting Gearted Flutter Web Build"
       
-      # Install Flutter
+      # Install Flutter (more reliable approach)
       echo "📦 Installing Flutter..."
       curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.5-stable.tar.xz -o flutter.tar.xz
       tar xf flutter.tar.xz
       export PATH="$PWD/flutter/bin:$PATH"
       
-      # Move to Flutter project directory
-      cd gearted-mobile
-      
       # Verify Flutter installation
       flutter --version
+      echo "✅ Flutter installed successfully"
       
-      # Setup production environment
-      echo "🔧 Setting up environment..."
+      # Navigate to Flutter project
+      cd gearted-mobile
+      echo "📂 Working in $(pwd)"
+      
+      # Setup environment
       if [ -f ".env.production" ]; then
         cp .env.production .env
-        echo "✅ Environment configured"
+        echo "🔧 Production environment configured"
+      else
+        echo "⚠️  No .env.production found, using defaults"
       fi
       
       # Install dependencies
       echo "📦 Installing Flutter dependencies..."
       flutter pub get
       
-      # Build for web
-      echo "🏗️ Building for web..."
-      flutter build web --release
+      # Build for web with HTML renderer for better compatibility
+      echo "🏗️  Building Flutter web app..."
+      flutter build web --release --web-renderer html
       
-      # Move build output to root for static deployment
-      mv build/web ../build-output
+      # Move build output to root for static site deployment
+      echo "📋 Moving build output..."
+      mv build/web ../flutter-build
       
       echo "✅ Build completed successfully!"
+      ls -la ../flutter-build/
       
-    publishPath: build-output
+    publishPath: flutter-build
+    
     buildFilter:
       paths:
       - gearted-mobile/**
-    headers:
-      - path: /*
-        name: X-Frame-Options
-        value: DENY
-      - path: /*
-        name: X-Content-Type-Options
-        value: nosniff
-      - path: /assets/*
-        name: Cache-Control
-        value: public, max-age=31536000, immutable
-      - path: /canvaskit/*
-        name: Cache-Control
-        value: public, max-age=31536000, immutable
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+      
+    # Environment variables
     envVars:
       - key: FLUTTER_WEB
         value: "true"
@@ -67,3 +59,40 @@ services:
         value: https://gearted-backend.onrender.com/api
       - key: GOOGLE_WEB_CLIENT_ID
         value: 687718240492-64g24qkkeneqbsn4803gft7bgrbqlihn.apps.googleusercontent.com
+      - key: NODE_ENV
+        value: production
+        
+    # Custom domains (optional - can be configured later)
+    domains:
+      - gearted.eu
+      - www.gearted.eu
+      
+    # Security and performance headers
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-XSS-Protection
+        value: "1; mode=block"
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /canvaskit/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: "*.js"
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: "*.css"
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+        
+    # SPA routing support
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
