@@ -1,8 +1,7 @@
 services:
-  - type: web
+  - type: static_site
     name: gearted-mobile-app
     env: static
-    rootDir: gearted-mobile
     buildCommand: |
       echo "🚀 Installing Flutter and building Gearted Mobile App"
       
@@ -12,9 +11,11 @@ services:
       tar xf flutter.tar.xz
       export PATH="$PWD/flutter/bin:$PATH"
       
+      # Move to Flutter project directory
+      cd gearted-mobile
+      
       # Verify Flutter installation
       flutter --version
-      flutter doctor --android-licenses || echo "Skipping Android licenses"
       
       # Setup production environment
       echo "🔧 Setting up environment..."
@@ -31,9 +32,12 @@ services:
       echo "🏗️ Building for web..."
       flutter build web --release
       
+      # Move build output to root for static deployment
+      mv build/web ../build-output
+      
       echo "✅ Build completed successfully!"
       
-    staticPublishPath: build/web
+    publishPath: build-output
     buildFilter:
       paths:
       - gearted-mobile/**
