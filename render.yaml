@@ -1,6 +1,25 @@
 services:
-  - type: static_site
-    name: gearted-web-app
+  - type: static      # Build Flutter app - Ultra Simple Grey Screen Fix
+      echo "Building Flutter app with ultra simple approach..."
+      cd gearted-mobile
+      
+      # Clean environment and get dependencies
+      echo "Cleaning environment completely..."
+      rm -rf build
+      rm -rf .dart_tool
+      flutter clean
+      
+      # Get dependencies 
+      echo "Getting fresh dependencies..."
+      flutter pub get
+      
+      # Backup original files
+      echo "Backing up original index.html..."
+      cp web/index.html web/index.html.backup
+      
+      # Use the ultra-simple index.html that forces HTML renderer
+      echo "Using ultra-simple index.html with HTML renderer..."
+      cp web/index_ultra_simple.html web/index.htmlrted-web-app
     env: flutter
     plan: free
     autoDeploy: true
@@ -44,12 +63,15 @@ services:
       echo "Using ultra-minimal index.html with HTML renderer..."
       cp web/index_minimal.html web/index.html
       
-      # Build with HTML renderer for maximum compatibility
-      echo "Building with HTML renderer for guaranteed rendering..."
+      # Build with HTML renderer for maximum compatibility and no optimization
+      echo "Building with HTML renderer in ultra-compatible mode..."
+      export FLUTTER_WEB_RENDERER=html
       flutter build web \
         --release \
         --web-renderer html \
-        --pwa-strategy none
+        --pwa-strategy none \
+        --dart-define=FLUTTER_WEB_USE_EXPERIMENTAL_CANVAS_TEXT=true \
+        --dart-define=FLUTTER_WEB_DEBUG_SHOW_SEMANTICS=false
       
       # Force consistent viewport and no caching
       echo "Adding critical meta tags to HTML..."
