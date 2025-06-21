@@ -164,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const SizedBox(height: 40),
 
-                  // Gearted Logo avec fallback amélioré
+                  // Gearted Logo - Simple Design (Bigger)
                   Center(
                     child: Container(
                       width: 180,
@@ -172,32 +172,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
                         color: Colors.white.withOpacity(0.1),
-                        border: Border.all(
-                          color: _armyGreen.withOpacity(0.3),
-                          width: 2,
-                        ),
                       ),
                       padding: const EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Icône fallback toujours visible
-                          Icon(
+                      child: Image.asset(
+                        'assets/images/GEARTED.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
                             Icons.military_tech,
-                            size: 60,
+                            size: 80,
                             color: _armyGreen,
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'GEARTED',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 2,
-                            ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -217,16 +203,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 24),
 
-                  // Formulaire avec style amélioré
+                  // Formulaire
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: const Color(0xFF2A2A2A),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Colors.grey.withOpacity(0.2),
-                        width: 1,
-                      ),
                     ),
                     child: Column(
                       children: [
@@ -307,6 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
+                                fontFamily: 'Oswald',
                                 letterSpacing: 1,
                               ),
                             ),
@@ -342,35 +325,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 24),
 
-                  // Bouton Google
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _isLoading ? null : _loginWithGoogle,
-                      icon: Icon(
-                        Icons.g_mobiledata,
-                        size: 24,
-                        color: _armyGreen,
+                  // Boutons de connexion sociale - GOOGLE SEULEMENT
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildSocialButton(
+                        onPressed: _loginWithGoogle,
+                        icon: Icons.g_mobiledata,
+                        label: 'Google',
                       ),
-                      label: const Text(
-                        'Continuer avec Google',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        side: BorderSide(color: _armyGreen),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 16,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
+                    ],
                   ),
 
                   const SizedBox(height: 40),
@@ -381,7 +345,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       const Text(
                         'Pas encore de compte?',
-                        style: TextStyle(color: Colors.white70),
+                        style: TextStyle(color: Colors.white),
                       ),
                       TextButton(
                         onPressed: () {
@@ -494,6 +458,45 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSocialButton({
+    required VoidCallback onPressed,
+    required IconData icon,
+    required String label,
+  }) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF2A2A2A),
+          border: Border.all(
+            color: const Color(0xFF3A3A3A),
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 24,
+              color: _armyGreen,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
