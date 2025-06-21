@@ -28,7 +28,7 @@ services:
       echo "Building Flutter app..."
       cd gearted-mobile
       flutter pub get
-      flutter build web --release --web-renderer canvaskit
+      flutter build web --release
       
       # Move build output
       echo "Moving build files..."
