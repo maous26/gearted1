@@ -39,6 +39,7 @@ const getAllowedOrigins = () => {
     'https://gearted-admin.onrender.com',
     // Vercel deployments
     'https://gearted1-fwilkxzy6-moussas-projects-6dc9792f.vercel.app',
+    'https://gearted1-chnet6wqd-moussas-projects-6dc9792f.vercel.app',
     'https://gearted1.vercel.app',
     // Development domains
     process.env.CLIENT_URL || 'http://localhost:3000',
