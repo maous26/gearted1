@@ -37,6 +37,9 @@ const getAllowedOrigins = () => {
     'https://gearted1.onrender.com',
     'https://gearted-frontend.onrender.com',
     'https://gearted-admin.onrender.com',
+    // Vercel deployments
+    'https://gearted1-fwilkxzy6-moussas-projects-6dc9792f.vercel.app',
+    'https://gearted1.vercel.app',
     // Development domains
     process.env.CLIENT_URL || 'http://localhost:3000',
     'http://localhost:8080', // Flutter dev port
