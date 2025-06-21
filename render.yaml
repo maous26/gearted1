@@ -24,42 +24,39 @@ services:
       export PATH="$PATH:/opt/flutter/bin"
       flutter doctor -v
       
-      # Build Flutter app - Grey Screen Fix Special Edition
-      echo "Building Flutter app with special grey screen fix..."
+      # Build Flutter app - Minimal HTML Version (Grey Screen Fix)
+      echo "Building minimal HTML version to fix grey screen..."
       cd gearted-mobile
       
-      # Clean environment and get dependencies
+      # Clean environment completely
+      echo "Cleaning environment..."
       flutter clean
+      
+      # Get dependencies 
+      echo "Getting dependencies..."
       flutter pub get
       
       # Backup original files
-      cp web/index.html web/index.html.bak
+      echo "Backing up original index.html..."
+      cp web/index.html web/index.html.original
       
-      # Create a special version of index.html that uses the HTML renderer if CanvasKit fails
-      echo "Applying grey screen fix to index.html..."
-      cp web/index_new.html web/index.html
+      # Use the ultra-minimal index.html that forces HTML renderer
+      echo "Using ultra-minimal index.html with HTML renderer..."
+      cp web/index_minimal.html web/index.html
       
-      # Add bootstrap.js script reference to index.html
-      sed -i 's/<head>/<head>\n  <script src="bootstrap.js"><\/script>/' web/index.html
-      
-      # Create a production flutter web build with both renderers available
-      echo "Building with dual-renderer configuration for maximum compatibility..."
+      # Build with HTML renderer for maximum compatibility
+      echo "Building with HTML renderer for guaranteed rendering..."
       flutter build web \
         --release \
-        --web-renderer canvaskit \
-        --dart-define=FLUTTER_WEB_CANVASKIT_URL=/canvaskit/ \
-        --dart-define=FLUTTER_WEB_AUTO_DETECT=true \
-        --pwa-strategy none \
-        --csp
+        --web-renderer html \
+        --pwa-strategy none
       
-      # Ensure bootstrap.js is copied to the build directory
-      cp web/bootstrap.js build/web/
-      
-      # Add special meta tags to index.html in build
+      # Force consistent viewport and no caching
+      echo "Adding critical meta tags to HTML..."
       sed -i 's/<head>/<head>\n  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">\n  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">/' build/web/index.html
       
-      # Add fallback content in case Flutter fails to load
-      echo "Adding fallback content..."
+      # Add fallback messaging
+      echo "Adding fallback message for JavaScript-disabled browsers..."
       cat >> build/web/index.html << 'EOL'
 <noscript>
   <div style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;text-align:center;padding:20px;">
