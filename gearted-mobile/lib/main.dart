@@ -5,18 +5,18 @@ import 'config/theme.dart';
 import 'routes/app_router.dart';
 
 Future<void> main() async {
+  // Ensure Flutter is initialized properly
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Charger les variables d'environnement (avec gestion d'erreur)
+  // Load environment variables
   try {
     await dotenv.load(fileName: ".env");
-    print("✅ Variables d'environnement chargées");
+    print("✅ Environment variables loaded");
   } catch (e) {
-    print("⚠️ Fichier .env non trouvé, utilisation des valeurs par défaut");
+    print("⚠️ .env file not found, using default values");
   }
 
-  // TODO: Initialiser Firebase ici
-
+  // Run the app with error handling
   runApp(
     const ProviderScope(
       child: GeartedApp(),

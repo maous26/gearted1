@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       end: Alignment.bottomCenter,
                       colors: [
                         const Color(0xFF0D0D0D),
-                        const Color(0xFF0D0D0D).withValues(alpha: 0.95),
+                        const Color(0xFF0D0D0D).withAlpha(242),
                       ],
                     ),
                   ),
@@ -901,7 +901,7 @@ class CamoPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.02)
+      ..color = Colors.white.withAlpha(5)
       ..style = PaintingStyle.fill;
 
     // Créer un pattern subtil

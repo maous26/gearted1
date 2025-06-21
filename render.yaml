@@ -1,0 +1,36 @@
+services:
+  - type: static_site
+    name: gearted-web-app
+    env: flutter
+    plan: free
+    autoDeploy: true
+    branch: main
+    headers:
+      - path: "/*"
+        name: "Cache-Control"
+        value: "no-cache, no-store, must-revalidate"
+    routes:
+      - type: rewrite
+        source: "/*"
+        destination: "/index.html" 
+    buildCommand: |
+      # Create publish directory first
+      mkdir -p flutter-build
+      
+      # Install Flutter
+      echo "Installing Flutter..."
+      apt-get update && apt-get install -y --no-install-recommends git unzip xz-utils zip libglu1-mesa
+      git clone https://github.com/flutter/flutter.git --depth 1 --branch 3.22.2 /opt/flutter
+      export PATH="$PATH:/opt/flutter/bin"
+      flutter doctor -v
+      
+      # Build Flutter app - simplified for now
+      echo "Building Flutter app..."
+      cd gearted-mobile
+      flutter pub get
+      flutter build web --release
+      
+      # Move build output
+      echo "Moving build files..."
+      mv build/web/* ../flutter-build/
+    publishPath: flutter-build

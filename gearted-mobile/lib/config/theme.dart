@@ -59,12 +59,6 @@ class GeartedTheme {
       filled: true,
       fillColor: Colors.grey.shade50,
     ),
-    cardTheme: CardTheme(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-    ),
   );
 
   // Thème sombre
@@ -109,12 +103,6 @@ class GeartedTheme {
       ),
       filled: true,
       fillColor: Colors.grey.shade900,
-    ),
-    cardTheme: CardTheme(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
     ),
   );
 

@@ -164,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       end: Alignment.bottomCenter,
                       colors: [
                         const Color(0xFF0D0D0D),
-                        const Color(0xFF0D0D0D).withValues(alpha: 0.95),
+                        const Color(0xFF0D0D0D).withAlpha(242),
                       ],
                     ),
                   ),
