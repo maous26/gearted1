@@ -28,7 +28,10 @@ services:
       echo "Building Flutter app..."
       cd gearted-mobile
       flutter pub get
-      flutter build web --release --dart-define=FLUTTER_WEB_RENDERER=canvaskit
+      # Clear cache before building
+      flutter clean
+      # Build with explicit canvaskit renderer with all optimizations
+      flutter build web --release --web-renderer canvaskit
       
       # Move build output
       echo "Moving build files..."
