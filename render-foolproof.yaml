@@ -1,18 +1,11 @@
-# FINAL FIX: Use Flutter's direct build output - No custom directories
+# FOOLPROOF RENDER CONFIG - Creates exact directory structure Render expects
 services:
   - type: static_site
     name: gearted-mobile-app
     env: static
-    
-    # Pre-create the directory structure that Render expects
     buildCommand: |
-      echo "🚀 FINAL FIX: Direct Flutter Build Output Approach"
-      echo "📍 Working directory: $(pwd)"
-      
-      # FIRST: Create the directory structure Render expects
-      echo "📁 Pre-creating directory structure..."
-      mkdir -p gearted-mobile/build/web
-      echo "✅ Directory structure ready"
+      echo "🚀 FOOLPROOF Flutter Build - Creating exact directory structure"
+      echo "📍 Starting in: $(pwd)"
       
       # Install Flutter
       echo "📦 Installing Flutter..."
@@ -22,9 +15,9 @@ services:
       
       # Verify Flutter
       flutter --version
-      echo "✅ Flutter installed successfully"
+      echo "✅ Flutter ready"
       
-      # Navigate to Flutter project and build
+      # Build the Flutter app
       cd gearted-mobile
       echo "📂 Building in: $(pwd)"
       
@@ -34,19 +27,26 @@ services:
         echo "🔧 Environment configured"
       fi
       
-      # Install dependencies and build
-      echo "📦 Installing dependencies..."
+      # Install and build
       flutter pub get
-      
-      echo "🏗️ Building Flutter web app..."
       flutter build web --release --web-renderer html
       
-      echo "✅ Build completed!"
-      echo "📁 Build output:"
-      ls -la build/web/
+      # Create the EXACT directory structure Render expects
+      echo "📋 Creating exact directory structure for Render..."
+      cd ..
+      mkdir -p flutter-build
       
-    # Use Flutter's DIRECT build output - no custom directories
-    publishPath: gearted-mobile/build/web
+      # Copy ALL files from Flutter build output
+      echo "📁 Copying Flutter build files..."
+      cp -r gearted-mobile/build/web/* flutter-build/
+      
+      # Verify the structure
+      echo "✅ Final directory structure:"
+      ls -la flutter-build/
+      echo "📄 index.html exists: $([ -f flutter-build/index.html ] && echo 'YES' || echo 'NO')"
+      
+    # Use flutter-build as publishPath (this will be /opt/render/project/src/flutter-build)
+    publishPath: flutter-build
     
     buildFilter:
       paths:

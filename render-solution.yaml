@@ -1,0 +1,43 @@
+services:
+  - type: static_site
+    name: gearted-flutter-app
+    env: flutter
+    plan: free
+    autoDeploy: true
+    branch: main
+    rootDir: gearted-mobile
+    buildFilter:
+      paths:
+      - "gearted-mobile/**"
+    headers:
+      - path: "/*"
+        name: "Cache-Control"
+        value: "no-cache, no-store, must-revalidate"
+    routes:
+      - type: rewrite
+        source: "/*"
+        destination: "/index.html"
+    buildCommand: |
+      # Step 1: Create the build directory structure expected by Render *before* anything else.
+      # This is the critical fix.
+      mkdir -p build/web
+
+      # Step 2: Install Flutter
+      echo "Updating and installing dependencies..."
+      apt-get update && apt-get install -y --no-install-recommends git unzip xz-utils zip libglu1-mesa
+      
+      echo "Cloning Flutter repository..."
+      git clone https://github.com/flutter/flutter.git --depth 1 --branch 3.22.2 /opt/flutter
+      
+      echo "Adding Flutter to PATH..."
+      export PATH="$PATH:/opt/flutter/bin"
+      
+      echo "Running flutter doctor..."
+      flutter doctor -v
+
+      # Step 3: Build the Flutter Application
+      echo "Building Flutter web application..."
+      flutter pub get
+      flutter build web --release --web-renderer canvaskit
+
+    publishPath: build/web
