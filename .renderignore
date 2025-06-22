@@ -1,5 +1,0 @@
-# Force clean deployment
-flutter-build/
-build-output/
-node_modules/
-*.backup
