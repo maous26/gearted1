@@ -42,6 +42,7 @@ const getAllowedOrigins = () => {
     'https://gearted1-chnet6wqd-moussas-projects-6dc9792f.vercel.app',
     'https://gearted1-7lb3xzrmy-moussas-projects-6dc9792f.vercel.app',
     'https://gearted1.vercel.app',
+    'https://web-43hwxs1sw-moussas-projects-6dc9792f.vercel.app',
     // Development domains
     process.env.CLIENT_URL || 'http://localhost:3000',
     'http://localhost:8080', // Flutter dev port
