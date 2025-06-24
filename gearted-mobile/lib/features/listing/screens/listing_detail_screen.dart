@@ -184,9 +184,10 @@ class ListingDetailScreen extends StatelessWidget {
                 onPressed: () {
                   // Créer ou ouvrir une conversation avec le vendeur
                   final seller = mockData['seller'];
-                  final sellerId = '${seller['name']}'.replaceAll(' ', '').toLowerCase();
+                  final sellerId =
+                      '${seller['name']}'.replaceAll(' ', '').toLowerCase();
                   final sellerName = Uri.encodeComponent(seller['name']);
-                  
+
                   // Naviguer vers l'écran de chat avec les informations du vendeur
                   context.push('/chat/$sellerId?name=$sellerName');
                 },
