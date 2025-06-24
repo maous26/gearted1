@@ -11,11 +11,26 @@ class ApiService {
   }
 
   ApiService._internal() {
+    // Récupérer l'URL de l'API avec des valeurs par défaut sûres
+    String baseUrl;
+    try {
+      baseUrl = dotenv.env['API_URL'] ??
+          dotenv.env['API_BASE_URL'] ??
+          'https://gearted-backend.onrender.com/api';
+    } catch (e) {
+      baseUrl =
+          'https://gearted-backend.onrender.com/api'; // Valeur par défaut en production
+    }
+
+    print('🌐 API BaseURL configurée: $baseUrl'); // Debug
+
     _dio = Dio(
       BaseOptions(
-        baseUrl: dotenv.env['API_URL'] ?? 'http://localhost:3000/api',
-        connectTimeout: const Duration(milliseconds: 10000),
-        receiveTimeout: const Duration(milliseconds: 10000),
+        baseUrl: baseUrl,
+        connectTimeout:
+            const Duration(milliseconds: 30000), // Augmenté pour Render
+        receiveTimeout:
+            const Duration(milliseconds: 30000), // Augmenté pour Render
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -47,6 +62,9 @@ class ApiService {
   // Méthodes d'authentification
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
+      print('🔐 Tentative de connexion pour: $email');
+      print('🌐 URL de connexion: ${_dio.options.baseUrl}/auth/login');
+
       final response = await _dio.post(
         '/auth/login',
         data: {
@@ -55,13 +73,25 @@ class ApiService {
         },
       );
 
+      print('✅ Réponse de connexion: ${response.statusCode}');
+      print('📦 Données reçues: ${response.data}');
+
       // Sauvegarder le token
       final token = response.data['token'];
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token', token);
+      if (token != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', token);
+        print('💾 Token sauvegardé');
+      }
 
       return response.data;
     } catch (e) {
+      print('❌ Erreur de connexion: $e');
+      if (e is DioException) {
+        print('📡 Status Code: ${e.response?.statusCode}');
+        print('📝 Response Data: ${e.response?.data}');
+        print('🔗 Request URL: ${e.requestOptions.uri}');
+      }
       _handleError(e);
       rethrow;
     }

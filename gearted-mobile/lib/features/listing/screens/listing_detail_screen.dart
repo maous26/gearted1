@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../widgets/common/rating_widgets.dart';
 import '../../../services/rating_service.dart';
 
@@ -181,10 +182,13 @@ class ListingDetailScreen extends StatelessWidget {
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Ouverture de la conversation')),
-                  );
+                  // Créer ou ouvrir une conversation avec le vendeur
+                  final seller = mockData['seller'];
+                  final sellerId = '${seller['name']}'.replaceAll(' ', '').toLowerCase();
+                  final sellerName = Uri.encodeComponent(seller['name']);
+                  
+                  // Naviguer vers l'écran de chat avec les informations du vendeur
+                  context.push('/chat/$sellerId?name=$sellerName');
                 },
                 icon: const Icon(Icons.message),
                 label: const Text('Contacter'),
