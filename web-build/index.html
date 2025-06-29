@@ -14,8 +14,27 @@
   <link rel="manifest" href="manifest.json">
   
   <script>
-    // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "3847084544";
+    // Service worker version
+    const serviceWorkerVersion = "1194959428";
+    
+    // Debug logging
+    console.log('🚀 Gearted initializing...');
+    
+    // Load entrypoint
+    var loadMainDartJs = function() {
+      var script = document.createElement('script');
+      script.src = 'main.dart.js';
+      script.type = 'application/javascript';
+      script.onload = function() {
+        console.log('✅ main.dart.js loaded successfully');
+        hideLoading();
+      };
+      script.onerror = function() {
+        console.error('❌ Failed to load main.dart.js');
+        showError('Erreur de chargement de l\'application');
+      };
+      document.head.appendChild(script);
+    };
   </script>
   
   <style>
@@ -113,74 +132,47 @@
     </div>
   </div>
   
-  <script src="debug-loader.js"></script>
-  <script src="flutter.js" defer></script>
   <script>
-    window.addEventListener('load', function(ev) {
-      var loading = document.getElementById('loading');
-      var errorShown = false;
-      
-      // Error timeout
-      var errorTimeout = setTimeout(function() {
-        if (!errorShown) {
-          showError('Chargement trop long');
-        }
-      }, 15000); // Increased timeout for CanvasKit loading
-      
-      function showError(message) {
-        if (errorShown) return;
-        errorShown = true;
-        clearTimeout(errorTimeout);
-        loading.innerHTML = `
-          <div class="logo">G</div>
-          <div class="loading-text">GEARTED</div>
-          <div class="error-message">${message}</div>
-          <button class="retry-btn" onclick="location.reload()">
-            Rafraîchir la page
-          </button>
-        `;
+    var loading = document.getElementById('loading');
+    var errorShown = false;
+    
+    function showError(message) {
+      if (errorShown) return;
+      errorShown = true;
+      console.error('❌ Error:', message);
+      loading.innerHTML = `
+        <div class="logo">G</div>
+        <div class="loading-text">GEARTED</div>
+        <div class="error-message">${message}</div>
+        <button class="retry-btn" onclick="location.reload()">
+          Rafraîchir la page
+        </button>
+      `;
+    }
+    
+    function hideLoading() {
+      if (!errorShown) {
+        console.log('✅ Hiding loading screen');
+        loading.style.display = 'none';
       }
-      
-      function hideLoading() {
-        if (!errorShown) {
-          clearTimeout(errorTimeout);
-          loading.style.display = 'none';
-        }
+    }
+    
+    // Error timeout
+    setTimeout(function() {
+      if (!errorShown) {
+        console.warn('⚠️ Loading timeout reached');
+        showError('Chargement trop long');
       }
-      
-      // Wait for Flutter to be available
-      function initFlutter() {
-        // Explicitly set renderer to CanvasKit
-        window.flutterWebRenderer = "canvaskit";
-        
-        if (typeof _flutter !== 'undefined' && _flutter.loader) {
-          _flutter.loader.loadEntrypoint({
-            serviceWorker: {
-              serviceWorkerVersion: serviceWorkerVersion,
-            },
-            onEntrypointLoaded: function(engineInitializer) {
-              // Configure to use CanvasKit renderer
-              engineInitializer.initializeEngine({
-                useColorEmoji: true,
-                renderer: "canvaskit"
-              }).then(function(appRunner) {
-                hideLoading();
-                appRunner.runApp();
-              }).catch(function(error) {
-                console.error('Engine initialization error:', error);
-                showError('Erreur d\'initialisation');
-              });
-            }
-          });
-        } else {
-          // Fallback: try again in 100ms
-          setTimeout(initFlutter, 100);
-        }
-      }
-      
-      // Start initialization
-      setTimeout(initFlutter, 100);
-    });
+    }, 10000);
+    
+    // Start loading when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadMainDartJs);
+    } else {
+      loadMainDartJs();
+    }
+    
+    console.log('🔧 Simple Flutter loader initialized');
   </script>
 </body>
 </html>
