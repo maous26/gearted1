@@ -1,16 +1,11 @@
 services:
   - type: static_site
     name: gearted-mobile-app
-    buildCommand: cd gearted-mobile && flutter pub get && flutter build web --release
-    staticPublishPath: ./gearted-mobile/build/web
+    buildCommand: echo "Using pre-built Flutter web files with grey screen fix"
+    staticPublishPath: ./web-build
     envVars:
       - key: FLUTTER_WEB
         value: "true"
-      - key: FLUTTER_BUILD_MODE
-        value: "release"
     domains:
       - www.gearted.eu
       - gearted.eu
-    buildFilter:
-      paths:
-        - gearted-mobile/**
