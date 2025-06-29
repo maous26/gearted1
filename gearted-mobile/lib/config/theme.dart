@@ -1,5 +1,23 @@
 import 'package:flutter/material.dart';
 
+// Compatibility class for easier access to theme properties
+class AppTheme {
+  // Colors
+  static const Color backgroundColor = Color(0xFF1A1A1A);
+  static const Color cardColor = Color(0xFF2A2A2A);
+  static const Color primaryColor = Color(0xFF4A5D23);
+  static const Color accentColor = Color(0xFFEA580C);
+  static const Color textColor = Colors.white;
+  static const Color textSecondaryColor = Color(0xFFB0B0B0);
+
+  // Gradients
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [Color(0xFF4A5D23), Color(0xFF5a6d2b)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+}
+
 class GeartedTheme {
   // Couleurs principales
   static const Color primaryBlue = Color(0xFF1E3A8A);
