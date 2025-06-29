@@ -1,6 +1,9 @@
-# Fichiers de documentation et scripts (exclus pour le commit)
-*.md
+# Scripts exclus pour le commit
 *.sh
+
+# Documentation exclue (sauf les fichiers de résumé)
+*.md
+!ENHANCEMENT_SUMMARY.md
 
 # Dependencies
 node_modules/
