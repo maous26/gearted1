@@ -1,0 +1,11 @@
+services:
+  - type: static_site
+    name: gearted-mobile-app
+    buildCommand: flutter build web --release
+    staticPublishPath: ./build/web
+    envVars:
+      - key: FLUTTER_WEB
+        value: "true"
+    domains:
+      - www.gearted.eu
+      - gearted.eu
