@@ -13,29 +13,7 @@
   <title>Gearted</title>
   <link rel="manifest" href="manifest.json">
   
-  <script>
-    // Service worker version
-    var serviceWorkerVersion = null;
-    
-    // Debug logging
-    console.log('🚀 Gearted initializing...');
-    
-    // Load entrypoint
-    var loadMainDartJs = function() {
-      var script = document.createElement('script');
-      script.src = 'main.dart.js';
-      script.type = 'application/javascript';
-      script.onload = function() {
-        console.log('✅ main.dart.js loaded successfully');
-        hideLoading();
-      };
-      script.onerror = function() {
-        console.error('❌ Failed to load main.dart.js');
-        showError('Erreur de chargement de l\'application');
-      };
-      document.head.appendChild(script);
-    };
-  </script>
+  <script src="flutter_bootstrap.js" async></script>
   
   <style>
     body {
@@ -44,7 +22,6 @@
       background-color: #1A1A1A;
       color: white;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      overflow: hidden;
     }
     
     .loading {
@@ -97,33 +74,10 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
-    .error-message {
-      color: #ff6b6b;
-      margin-bottom: 20px;
-      font-size: 16px;
-      text-align: center;
-    }
-    
-    .retry-btn {
-      padding: 12px 24px;
-      background: #4A5D23;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 600;
-      transition: background-color 0.3s;
-    }
-    
-    .retry-btn:hover {
-      background: #5a6d2b;
-    }
   </style>
 </head>
 <body>
-  <div class="loading" id="loading">
+  <div id="loading" class="loading">
     <div class="logo">G</div>
     <div class="loading-text">GEARTED</div>
     <div class="spinner"></div>
@@ -131,48 +85,5 @@
       Chargement de votre marketplace Airsoft...
     </div>
   </div>
-  
-  <script>
-    var loading = document.getElementById('loading');
-    var errorShown = false;
-    
-    function showError(message) {
-      if (errorShown) return;
-      errorShown = true;
-      console.error('❌ Error:', message);
-      loading.innerHTML = `
-        <div class="logo">G</div>
-        <div class="loading-text">GEARTED</div>
-        <div class="error-message">${message}</div>
-        <button class="retry-btn" onclick="location.reload()">
-          Rafraîchir la page
-        </button>
-      `;
-    }
-    
-    function hideLoading() {
-      if (!errorShown) {
-        console.log('✅ Hiding loading screen');
-        loading.style.display = 'none';
-      }
-    }
-    
-    // Error timeout
-    setTimeout(function() {
-      if (!errorShown) {
-        console.warn('⚠️ Loading timeout reached');
-        showError('Chargement trop long');
-      }
-    }, 10000);
-    
-    // Start loading when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', loadMainDartJs);
-    } else {
-      loadMainDartJs();
-    }
-    
-    console.log('🔧 Simple Flutter loader initialized');
-  </script>
 </body>
 </html>
