@@ -6,6 +6,11 @@ services:
     envVars:
       - key: FLUTTER_WEB
         value: "true"
+      - key: FLUTTER_BUILD_MODE
+        value: "release"
     domains:
       - www.gearted.eu
       - gearted.eu
+    buildFilter:
+      paths:
+        - gearted-mobile/**
